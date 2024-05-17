@@ -1,0 +1,322 @@
+
+#define NUM_SENSORS 5
+#define NUM_SENSORS_PER_SENSOR 2
+const uint8_t SensorCount = 5;
+uint16_t sensorValues[SensorCount];
+int threshold[SensorCount];
+
+int position;
+int error=0;
+int Kp=0;
+
+const int motorRPin1 = 5; // signal pin 1 for the right motor, connect to IN1               
+const int motorRPin2 = 6;  // signal pin 2 for the right motor, connect to IN2
+//const int motorREnable = 3; // enable pin for the right motor (PWM enabled)
+
+const int motorLPin1 = 9; // signal pin 1 for the left motor, connect to IN3           
+const int motorLPin2 = 10; // signal pin 2 for the left motor, connect to IN4
+//const int motorLEnable = 6; // enable pin for the left motor (PWM enabled)
+
+const int irPins[5] = {2,4,7,8,12};
+int irSensorDigital[5] = {0,0,0,0,0};
+int i,j = 0;
+int d = 1000;
+
+int irSensors = B00000; 
+int previousSensor = B11111;
+
+int motorLSpeed = 255;
+int motorRSpeed = 255;
+//int error = 140;   // 145 best 200  //  normal 255  // mad 0 
+void setup() {
+  
+  
+  Serial.begin(9600);
+  
+  
+  pinMode(motorLPin1,OUTPUT);        
+  pinMode(motorLPin2,OUTPUT);
+ // pinMode(motorLEnable,OUTPUT);
+  
+  pinMode(motorRPin1,OUTPUT);        
+  pinMode(motorRPin2,OUTPUT);
+  //pinMode(motorREnable,OUTPUT);
+   
+  /* Set-up IR sensor pins as input */
+  for (int i = 0; i < 5; i++) 
+  {pinMode(irPins[i], INPUT);}
+ 
+
+}
+
+void loop() {
+    // 
+    
+     scanD();
+     check(); 
+}     
+    //  int c = 0, something = 9;
+void check( ) 
+{    
+     //position=irSensord
+     error=2000-position;
+     switch (irSensors) {
+     
+     case B11111: // on black paper 
+    
+     Serial.println("B00000");
+     Serial.println(irSensors);
+     //drive(-255,-255);
+     if(previousSensor==B11000||previousSensor==B11100||previousSensor==B11110||previousSensor==B11001||previousSensor==B10000){
+      drive_delay(225,-225,700);
+      Serial.println("Left");
+     }
+     else if(previousSensor==B00011||previousSensor==B00111||previousSensor==B00001||previousSensor==B10011||previousSensor==B011111){
+      drive_delay(-225,225,700);
+      Serial.println("Right");
+     }
+     else{
+      drive_delay(-225,225,700);
+      Serial.println("Pta nhi bsdk");
+
+     }
+     break;
+     
+     case B01111: // leftmost sensor on the line
+     //rightS();
+     Serial.println("B10000");
+     Serial.println(irSensors);
+     drive(-255,255);
+     previousSensor = irSensors;
+     break;
+      
+     case B10111:
+     //rightS();
+     Serial.println("B01000");
+     drive(-150,0);
+     Serial.println(irSensors);
+     previousSensor = irSensors;
+     break;
+     
+     case B11011: 
+     //rightS();
+     Serial.println("B00100");
+     Serial.println(irSensors);
+     go();
+     previousSensor = irSensors;
+     break;
+     
+
+     case B11101: 
+     //rightS();
+     Serial.println("B00010");
+     Serial.println(irSensors);
+     drive(0,-150);
+     previousSensor = irSensors;
+     break; 
+     
+     case B11110: 
+     //leftS();
+     Serial.println("B00001");
+     drive(255,-255);
+     Serial.println(irSensors);
+     previousSensor = irSensors;
+     break;          
+     
+     case B00111:
+     //rightS();
+     Serial.println("B11000");
+     drive(-150,0);
+     Serial.println(irSensors);
+     previousSensor = irSensors;
+     break;
+      
+     case B10011:
+     //rightS();
+     Serial.println("B01100");
+     drive(-255,0);
+     Serial.println(irSensors);
+     previousSensor = irSensors;
+     break;
+
+     case B11001:
+     //rightS(); 
+     Serial.println("B00110");
+     drive(0,-255);
+     Serial.println(irSensors);
+     previousSensor = irSensors;
+     break;
+     
+     case B11100: 
+     //go();
+     Serial.println("B00011");
+     drive(0,-150);
+     Serial.println(irSensors);
+     previousSensor = irSensors;
+     break;                   
+       
+     case B00011:
+     //rightS(); 
+     Serial.println("B11100"); 
+     drive(-255,255); 
+     Serial.println(irSensors);
+     previousSensor = irSensors;
+     break;
+      
+     case B10001:
+     //rightS();
+     Serial.println("B01110");
+     go();
+     Serial.println(irSensors);
+     previousSensor = irSensors;
+     break;
+     
+     case B11000:
+     //rightS();
+     Serial.println("B00111");
+     drive(150,-255);
+     Serial.println(irSensors);
+     previousSensor = irSensors;
+     break;   
+          
+     case B00001:
+     //rightS(); 
+     Serial.println("B11110");
+     drive(-255,255);
+     Serial.println(irSensors);
+     previousSensor = irSensors;
+     break; 
+     
+     case B10000:
+     //rightS(); 
+     Serial.println("B01111");      
+     drive(255,-255);
+     Serial.println(irSensors);
+     previousSensor = irSensors;
+     break; 
+
+     case B00000:
+     //rightS(); 
+     Serial.println("B11111");
+     go();
+     Serial.println(irSensors);
+     previousSensor = irSensors;
+     break;   
+   
+ 
+     default:
+     Serial.println("Unhandled case: ");
+     Serial.println(irSensors);  
+     go();
+     previousSensor = irSensors;
+     break;
+     
+  }
+ 
+}
+
+
+
+
+
+void right() 
+
+{
+   //  Serial.println("turning right");
+    // analogWrite(motorREnable, motorRSpeed);
+    //digitalWrite(motorRPin1, HIGH);
+    // digitalWrite(motorRPin2, LOW);
+    drive(-255,0);
+     
+   //  analogWrite(motorLEnable, motorLSpeed-error);
+    // digitalWrite(motorLPin1, LOW);
+    // digitalWrite(motorLPin2,HIGH);
+  
+}
+
+
+void left()  //turn left
+{
+     //Serial.println("turning left ");
+    // analogWrite(motorREnable, motorRSpeed-error);
+     //digitalWrite(motorRPin1, LOW);
+     //digitalWrite(motorRPin2, HIGH);
+     
+   //  analogWrite(motorLEnable, motorLSpeed);
+    // digitalWrite(motorLPin1, HIGH);
+     //digitalWrite(motorLPin2, LOW);
+     drive(0,-255);
+  
+}
+
+void go()
+{
+    //Serial.println("forward");
+     //digitalWrite(motorRPin1, HIGH);
+     //digitalWrite(motorRPin2, LOW);
+     
+     //digitalWrite(motorLPin1, HIGH);
+    // digitalWrite(motorLPin2, LOW);
+    drive(-655,-655);
+  
+}
+
+//----------------------------------------------------------------------------------------------------------------
+/// Set the current on a motor channel using PWM and directional logic.
+///
+/// \param pwm    PWM duty cycle ranging from -255 full reverse to 255 full forward
+/// \param IN1_PIN  pin number xIN1 for the given channel
+/// \param IN2_PIN  pin number xIN2 for the given channel
+void set_motor_pwm(int pwm, int IN1_PIN, int IN2_PIN)
+{
+  if (pwm < 0) {  // reverse speeds
+    analogWrite(IN1_PIN, -pwm);
+    digitalWrite(IN2_PIN, LOW);
+
+  } else { // stop or forward
+    digitalWrite(IN1_PIN, LOW);
+    analogWrite(IN2_PIN, pwm);
+  }
+}
+
+/// Set the current on both motors.
+///
+/// \param pwm_A  motor A PWM, -255 to 255
+/// \param pwm_B  motor B PWM, -255 to 255
+void set_motor_currents(int pwm_A, int pwm_B)
+{
+  set_motor_pwm(pwm_A, motorRPin1, motorRPin2);
+  set_motor_pwm(pwm_B, motorLPin1, motorLPin2);
+
+  // Print a status message to the console.
+  //Serial.print("Set motor A PWM = ");
+  //Serial.print(pwm_A);
+ // Serial.print(" motor B PWM = ");
+  //Serial.println(pwm_B);
+}
+
+/// Simple primitive for the motion sequence to set a speed and wait for an interval.
+///
+/// \param pwm_A  motor A PWM, -255 to 255
+/// \param pwm_B  motor B PWM, -255 to 255
+/// \param duration delay in milliseconds
+
+void drive(int pwm_A, int pwm_B)
+{
+  set_motor_currents(pwm_A, pwm_B);
+}
+void drive_delay(int pwm_A, int pwm_B, int D){
+
+    delay(D);
+    set_motor_currents(pwm_A, pwm_B);
+    
+}
+
+//------------------------------------------------------------------------------------------------------------------
+void scanD()
+{
+  for ( byte count = 0; count < 5;count++ )
+{
+  bitWrite(irSensors, count, !digitalRead( irPins[count] ));
+} 
+}
