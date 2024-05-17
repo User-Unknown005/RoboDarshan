@@ -15,7 +15,7 @@ void loop()
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
-  duration = pulseIn(echoPin, HIGH);
+  duration = pulseIn(echoPin, HIGH); //This function returns time in micro second
   distance = duration * 0.034 / 2;
   Serial.print("Distance: ");
   Serial.print(distance);
