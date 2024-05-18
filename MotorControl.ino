@@ -1,7 +1,7 @@
-const int motorRPin1 = 10;                
-const int motorRPin2 = 11; 
-const int motorLPin1 = 6;            
-const int motorLPin2 = 5;
+const int motorRPin1 = 6;                
+const int motorRPin2 = 9; 
+const int motorLPin1 = 5;            
+const int motorLPin2 = 3;
 
 void setup() {
   pinMode(motorLPin1,OUTPUT);        
@@ -12,7 +12,7 @@ void setup() {
 }
 
 void loop() {
-  drive(-255,255);
+  drive(250,250);
 }
 
 void drive(int pwm_A, int pwm_B)
