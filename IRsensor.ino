@@ -1,4 +1,4 @@
-const int irPins[5] = {2,4,7,8,12};
+const int irPins[5] = {13,11,12,7,2};
 int irSensors[5] = {0,0,0,0,0}; 
 // B stands for binary value. here it represents 5bit binary.
 void setup(){
