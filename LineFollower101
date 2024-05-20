@@ -1,7 +1,7 @@
-const int motorRPin1 = 6; // signal pin 1 for the right motor, connect to IN1               
-const int motorRPin2 = 9;  // signal pin 2 for the right motor, connect to 6
-const int motorLPin1 = 5; // signal pin 1 for the left motor, connect to 9           
-const int motorLPin2 = 3; // signal pin 2 for the left motor, connect to 10
+const int motorRPin1 = 6;               
+const int motorRPin2 = 9;  
+const int motorLPin1 = 5;           
+const int motorLPin2 = 3; 
 
 
 
